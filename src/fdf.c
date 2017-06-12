@@ -15,6 +15,8 @@
 
 int		trace_point(t_gene a, int x, int y, int couleur)
 {
+	x+= 0x200;
+	y+= 0x80;
 	if(x > a.max || x < 0 || y == 0 || y > a.may)
 		return(-1);
 	return(mlx_pixel_put(a.mlx, a.map, x, y, couleur));
@@ -22,8 +24,8 @@ int		trace_point(t_gene a, int x, int y, int couleur)
 
 void	trace_ligne(t_gene a, int xmin, int xmax, int ymin, int ymax, int color)
 {
-//	if(xmin < 0 || xmax > MAX_X || ymin < 0 || ymax > MAX_Y)
-//		return((void)ft_affiche("point qui depasse %d %d %d %d\n", xmin, xmax, ymin, ymax));
+	if(xmin < -0x200 || xmax > MAX_X || ymin < -0x80 || ymax > MAX_Y)
+		return((void)ft_affiche("point qui depasse %d %d %d %d\n", xmin, xmax, ymin, ymax));
 	int x;
 	int y;
 	double b;
@@ -40,6 +42,26 @@ void	trace_ligne(t_gene a, int xmin, int xmax, int ymin, int ymax, int color)
 		trace_point(a, x, y, color);
 		x++;
 	}
+}
+
+t_gene		calcule_point(t_gene a, int x, int y)
+{
+	int xmax;
+	int ymax;
+	int *tableauvaleurs;
+	int c;
+	int z;
+
+	tableauvaleurs = a.yy;
+	xmax = 0;
+	ymax = 0;
+	c = (a.tailllig * y) + x;
+	z = tableauvaleurs[c];
+	xmax = ((x - y) * 30);
+	ymax = ((x + y) * 15) + (z * -5);
+	a.xyz = xmax;
+	a.zyx = ymax;
+	return(a);
 }
 
 t_gene		trace_point_0(t_gene a, int x, int y, int couleur)
@@ -157,10 +179,11 @@ void	afficher_points(t_gene a)
 			ft_affiche("POINT PLACE : x%d y%d z%d\n", b, c, z);
 			b++;
 		}
+	ft_affiche("FIN\n");
 		b = 0;
 		c++;
 	}
-	return;
+//	return;
 	b = 0;
 	a.zyx = 0;
 	a.xyz = 0;
@@ -169,12 +192,17 @@ void	afficher_points(t_gene a)
 	{
 		while(c < a.compte)
 		{
-			kevin = ((c * a.tailllig) + b);
-			z = h[kevin];
-			z*=-5;
-			a = trace_point_0(a, ((b - c) * 30), (((b + c) * 15) + z), 0xffffff);
-			ft_affiche("POINT PLACE0 : x%d y%d z%d\n", b, c, z);
-			c++;
+			if(c != 0)
+			{
+				a = calcule_point(a, b, (c-1));
+				g = a.xyz;
+				f = a.zyx;
+				a = calcule_point(a, b, c);
+				trace_ligne(a, a.xyz, g, a.zyx, f, 0xffffff);
+			//	a = trace_point_1(a, ((b - c) * 30), (((b + c) * 15) + z), 0xffffff);
+				ft_affiche("POINT PLACE0 : x%d %d y%d %d\n", g, a.xyz, f, a.zyx);
+			}
+				c++;
 		}
 		c = 0;
 		b++;
@@ -325,6 +353,7 @@ int main(int c, char **v)//int c, char **v)
 	//	trace_point(a, 100, 100, 0x00ff00ff);
 	//	trace_point(a, 700, 700, 0x0000ff00);
 	//	trace_ligne(a, 100, 700, 100, 700, 0);
+	free(a.yy);
 	mlx_loop_hook(a.mlx, main_loop, (void *)&a);
 	mlx_loop(a.mlx);
 	mlx_destroy_image(a.mlx, a.img);
