@@ -38,42 +38,33 @@ t_gene	parsing(t_gene a, char **vinyl)
 	if((h = malloc(sizeof(int*) * e)) == NULL)
 		return(a);
 	a.yy = h;
-	e = 0;
 	while(f < a.compte)
 	{
 		buff = ft_strsplit(vinyl[f], ' ');
 		e = 0;
-		if(buff)
+		if(buff[e])
 		{
 			while(buff[e])
 			{
 				z = ft_atoi(buff[e]);
-				// f = y, e = x
-				kevin = ((f * a.tailllig) + e);
+				kevin = ((f * a.tailllig) + e); // f = y, e = x
 				h[kevin] = z;
 				e++;
 			}
-			z = 0;
-			while(z < a.compte)
-				ft_memdel((void**)&buff[z++]);
+			kevin = 0;
+			while(kevin < a.compte)
+				ft_memdel((void**)&buff[kevin++]);
+		//	read(0,0,0);
 		}
-	//	else
-	//		;
-		f++;
-		//	kevin = ((y * tailllig) +x
+			ft_strdel(&vinyl[f++]);
 	}
+	ft_memdel((void**)&h);
 	while(1)
 	{
 		;
 	}
-/*	e = 0;
-	f = 0;
-	while(e < kevin)
-	{
-		while(f++ < a.tailllig)
-			ft_affiche("%d ", h[e++]);
-		f = 0;
-		ft_affiche("\n");
-	}*/
+	e = 0;
+	while(e < a.compte)
+		ft_strdel(&vinyl[e++]);
 	return(a);
 }
